@@ -1,0 +1,42 @@
+options(repos = c(CRAN = 'https://cran.rstudio.com/'), download.file.method = 'libcurl')
+options(repos = c(CRAN='https://mran.microsoft.com/snapshot/2018-03-19'), download.file.method = 'libcurl')
+
+
+# Configure httr to perform out-of-band authentication if HTTR_LOCALHOST
+# is not set since a redirect to localhost may not work depending upon
+# where this Docker container is running.
+if(is.na(Sys.getenv("HTTR_LOCALHOST", unset=NA))) {
+  options(httr_oob_default = TRUE)
+}
+
+# miniDream additional content to Rprofile.site
+# empty Rprofile.site for R on Debian
+#
+# Copyright (C) 2008 Dirk Eddelbuettel and GPL'ed
+#
+# see help(Startup) for documentation on ~/.Rprofile and Rprofile.site
+#
+# from /etc/R/Rprofile.site
+
+options(max.print=100)
+options(scipen=10)
+options(menu.graphics=FALSE)
+options(prompt="> ")
+options(continue="... ")
+# options(width = 80)
+
+.First <- function(){
+  if(interactive()){
+    library(utils)
+    timestamp(,prefix=paste("##------ [",getwd(),"] ",sep=""))
+    cat(sprintf("\n   Welcome to R, %s!\n\n", Sys.getenv("USER")))
+
+    msg <- stringr::str_glue("
+    To get started, click on the folder to your right that says 'modules',
+    then find the folder for today's module (e.g., 'Module 0'). Click
+    to open the R Notebook file that has the word '_activity' in the name
+    and ends with in '.Rmd').\n\n")
+    message(msg)
+  }
+}
+.Last <- function()  cat("\n   Goodbye!\n\n")
